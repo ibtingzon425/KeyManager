@@ -1,18 +1,18 @@
 package keymanager;
 
 import java.io.*;
-import java.util.concurrent.Callable;
 import javax.net.ssl.*;
 
 /**
- * @author issa
+ * @author Isabelle Tingzon
+ * @author Angelu Kaye Tiu
  */
 public class SSLClient{
     
-    private final String HOST;
-    private final String PUBKEY;
-    private final String PWD;
-    private final int PORT;
+    protected String HOST;
+    protected String PUBKEY;
+    protected String PWD;
+    protected int PORT;
     
     private DataInputStream  console   = null;
     private DataOutputStream streamOut = null;
@@ -20,11 +20,16 @@ public class SSLClient{
     private SSLSocketFactory factory;
     
     public SSLClient(String host, int port, String pubkey, String password){
+        String dir = System.getProperty("user.dir");
         HOST = host;
         PORT = port;
-        PUBKEY = pubkey;
-        PWD = password;
+        //PUBKEY = pubkey;
+        PUBKEY = dir + "/SSLkeys/public.jks";
+        //PWD = password;
+        PWD = "password";
     }
+    
+    //TODO find a way to send multiple files without having to close/open multiple client sockets. 
             
     public boolean generateKeys() throws Exception {
          try {
@@ -70,9 +75,20 @@ public class SSLClient{
             getFile(socket, writeLine, Integer.parseInt(filesize));
             socket.close();
             
+            //Client opens new sock
+            socket = (SSLSocket) factory.createSocket(HOST, PORT);
+            socket.startHandshake();
+            streamOut = new DataOutputStream(socket.getOutputStream());
+            streamIn = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+                        
+            //Client sends message indicating to delete the keys
+            writeLine = "del";
+            streamOut.writeUTF(writeLine);
+            streamOut.flush();
+            
             return true;
-         } catch (IOException | NumberFormatException e) {
-            System.err.println(e.toString());
+         } catch (Exception e) {
+            e.printStackTrace();
          }
          return false;
     }
