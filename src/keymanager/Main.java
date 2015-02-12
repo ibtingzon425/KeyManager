@@ -8,8 +8,10 @@ import java.io.IOException;
  */
 public class Main {
     public static void main(String[] arg) {
-         KeyManagerAPI kmapi = new KeyManagerAPI();
-         kmapi.setVisible(true);
+        KeyManagerAPI kmapi = new KeyManagerAPI();
+        kmapi.setVisible(true);
+        //FileUpload fu = new FileUpload();
+        //fu.uploadFile("public_key");
     }
 }
         /*Command com = new Command();

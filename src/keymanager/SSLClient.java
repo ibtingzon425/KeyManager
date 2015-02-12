@@ -13,6 +13,7 @@ public class SSLClient{
     private final String PUBKEY;
     private final String PWD;
     private final int PORT;
+    
     private DataInputStream  console   = null;
     private DataOutputStream streamOut = null;
     private DataInputStream streamIn =  null;
@@ -24,25 +25,19 @@ public class SSLClient{
         PUBKEY = pubkey;
         PWD = password;
     }
-    
-    public void setup(){
-         System.setProperty("javax.net.ssl.trustStore", PUBKEY);
-         System.setProperty("javax.net.ssl.keyStorePassword", PWD);
-         factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-    }
-        
+            
     public boolean generateKeys() throws Exception {
          try {
-            setup();
+             //Initialize SSL Properties
+            System.setProperty("javax.net.ssl.trustStore", PUBKEY);
+            System.setProperty("javax.net.ssl.keyStorePassword", PWD);
+            factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
             SSLSocket socket = (SSLSocket) factory.createSocket(HOST, PORT);
             socket.startHandshake();
             
-            //console   = new DataInputStream(System.in);
             streamOut = new DataOutputStream(socket.getOutputStream());
             streamIn = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-            
-            System.out.println("Recieving master key...");
-            
+                        
             //Client sends message "master_key"
             String writeLine = "master_key";
             streamOut.writeUTF(writeLine);
@@ -52,21 +47,16 @@ public class SSLClient{
             String filesize = streamIn.readUTF();
             System.out.println(filesize);
             
-            //Client recieves master_key
+            //Client recieves master_key and closes socket
             getFile(socket, writeLine, Integer.parseInt(filesize));
-            
-            //Client closes socket
             socket.close();
             
-            //Client opens sock
+            //Client opens new sock
             socket = (SSLSocket) factory.createSocket(HOST, PORT);
-            //printSocketInfo(socket);
             socket.startHandshake();
             streamOut = new DataOutputStream(socket.getOutputStream());
             streamIn = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
-            
-            System.out.println("Recieving public key...");
-            
+                        
             //Client sends message "public_key"
             writeLine = "public_key";
             streamOut.writeUTF(writeLine);
@@ -78,10 +68,9 @@ public class SSLClient{
             
             //Client recieves public_key
             getFile(socket, writeLine, Integer.parseInt(filesize));
-            
             socket.close();
+            
             return true;
-         
          } catch (IOException | NumberFormatException e) {
             System.err.println(e.toString());
          }
@@ -126,6 +115,4 @@ public class SSLClient{
         SSLSession ss = s.getSession();
         System.out.println("   Protocol = "+ss.getProtocol());
    }
-
-   
 }
