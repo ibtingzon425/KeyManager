@@ -1,21 +1,16 @@
 package keymanager;
-
-import java.io.IOException;
-import javax.security.auth.login.LoginException;
-
 /**
  * @author Isabelle Tingzon
  * @author Angelu Kaye Tiu
  */
 public class Main {
-    public static void main(String[] arg) throws LoginException {
-        //UserAuthentication ur = new UserAuthentication();
-        //ur.setVisible(true);
-        
-        KeyManagerAPI kmapi = new KeyManagerAPI();
+    public static void main(String[] arg){        
+        //UserRegAPI urapi = new UserRegAPI();
+        //urapi.setVisible(true);
+        KeyManagerGUI kmapi = new KeyManagerGUI();
         kmapi.setVisible(true);
         //FileUpload fu = new FileUpload();
-        //fu.uploadFile("public_key");
+        //fu.uploadFile("README.md");
     }
 }
         /*Command com = new Command();

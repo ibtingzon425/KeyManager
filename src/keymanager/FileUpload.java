@@ -28,9 +28,9 @@ public class FileUpload {
         clientConfig.setProxyPort(8080);
         
         try{ 
-            AmazonS3 s3client = new AmazonS3Client(new ProfileCredentialsProvider(), clientConfig);      
-            //AWSCredentials credentials = new BasicAWSCredentials("AKIAIDBFDXXR7KADZVVQ", "Aic/9zYXXE5uspp38w+9yFKKo3JlRhA6dydlpTWP");
-            //AmazonS3 s3client = new AmazonS3Client(credentials, clientConfig);
+            //AmazonS3 s3client = new AmazonS3Client(new ProfileCredentialsProvider(), clientConfig);      
+            AWSCredentials credentials = new BasicAWSCredentials("AKIAJYYPWH7L44GOXPXQ ", "R3ei9mF4hbjaGU+F7g5TxHLt6e64sqCbGLFC3g+x ");
+            AmazonS3 s3client = new AmazonS3Client(credentials, clientConfig);
             
             System.out.println("Client instance created.");
             String bucketname = "cs199-testbucket";
