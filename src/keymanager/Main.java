@@ -5,10 +5,10 @@ package keymanager;
  */
 public class Main {
     public static void main(String[] arg){        
-        //UserRegAPI urapi = new UserRegAPI();
-        //urapi.setVisible(true);
-        KeyManagerGUI kmapi = new KeyManagerGUI();
-        kmapi.setVisible(true);
+        UserRegGUI urapi = new UserRegGUI();
+        urapi.setVisible(true);
+        //KeyManagerGUI kmapi = new KeyManagerGUI();
+        //kmapi.setVisible(true);
         //FileUpload fu = new FileUpload();
         //fu.uploadFile("README.md");
     }
