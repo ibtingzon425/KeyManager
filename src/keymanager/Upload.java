@@ -15,28 +15,33 @@ import java.io.InputStream;
 /**
  * @author Isabelle Tingzon
  */
-public class FileUpload {
+public class Upload {
     
     private static final String SUFFIX = "/";
     
-    public FileUpload(){}
+    public Upload(){}
     
     public void uploadFile(String filename){
         ClientConfiguration clientConfig = new ClientConfiguration();
         clientConfig.setProtocol(Protocol.HTTPS);
         clientConfig.setProxyHost("proxy8.upd.edu.ph");
         clientConfig.setProxyPort(8080);
-        
+                
         try{ 
             //AmazonS3 s3client = new AmazonS3Client(new ProfileCredentialsProvider(), clientConfig);      
-            AWSCredentials credentials = new BasicAWSCredentials("AKIAJYYPWH7L44GOXPXQ ", "R3ei9mF4hbjaGU+F7g5TxHLt6e64sqCbGLFC3g+x ");
-            AmazonS3 s3client = new AmazonS3Client(credentials, clientConfig);
+            AWSCredentials credentials = new BasicAWSCredentials("AKIAICHY5XUYPJQBF7FA", "j//Xjvf6CryyoxkjhVx8jz9nsrpipN/HkJfvHFdW");
+            AmazonS3 s3client = new AmazonS3Client(credentials);
+            File uploadFile = new File(filename);
+            if(uploadFile.exists() && !uploadFile.isDirectory()) { 
+                System.out.println("File exists.");
+            }
+            
             
             System.out.println("Client instance created.");
             String bucketname = "cs199-testbucket";
-            s3client.putObject(bucketname, filename, new File(filename));
+            s3client.putObject(bucketname, uploadFile.getName(), uploadFile);
             
-            System.out.println("Upload success.");
+            System.out.println(filename + " upload success.");
         } catch(Exception ex){
             ex.printStackTrace();
         }

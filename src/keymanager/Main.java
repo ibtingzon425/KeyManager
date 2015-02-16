@@ -7,10 +7,8 @@ public class Main {
     public static void main(String[] arg){        
         UserRegGUI urapi = new UserRegGUI();
         urapi.setVisible(true);
-        //KeyManagerGUI kmapi = new KeyManagerGUI();
-        //kmapi.setVisible(true);
-        //FileUpload fu = new FileUpload();
-        //fu.uploadFile("README.md");
+        KeyManagerGUI kmapi = new KeyManagerGUI();
+        kmapi.setVisible(true);
     }
 }
         /*Command com = new Command();

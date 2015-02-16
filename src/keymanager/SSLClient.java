@@ -65,7 +65,7 @@ public class SSLClient{
             streamIn = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             
         //Client sends message "public_key"
-            writeLine = "public_key";
+            writeLine = "pub_key";
             streamOut.writeUTF(writeLine);
             streamOut.flush();
             
@@ -109,7 +109,27 @@ public class SSLClient{
         BufferedInputStream get = new BufferedInputStream(socket.getInputStream());
         PrintWriter put = new PrintWriter(socket.getOutputStream(),true);
         
-        int bytes = 0;
+        // receive file
+        byte [] mybytearray  = new byte [fileSize];
+        InputStream is = socket.getInputStream();
+        FileOutputStream fos = new FileOutputStream(get_filename);
+        BufferedOutputStream bos = new BufferedOutputStream(fos);
+        int bytesRead = is.read(mybytearray,0,mybytearray.length);
+        int current = bytesRead;
+
+        do {
+           bytesRead = is.read(mybytearray, current, (mybytearray.length-current));
+           if(bytesRead >= 0) current += bytesRead;
+        } while(current < fileSize);
+
+        bos.write(mybytearray, 0 , current);
+        bos.flush();
+        System.out.println("File " + get_filename
+            + " downloaded (" + current + " bytes read)");
+    }
+    
+    //This piece of code won't work for Binary Files :P
+    /*  int bytes = 0;
         String filename = get_filename;
         put.println(filename);
         File file = new File(filename);
@@ -117,16 +137,14 @@ public class SSLClient{
         byte byte_array[] = new byte[1024];
         int totalbytes = 0;
 
-        while(totalbytes < fileSize){ 
+        while(totalbytes <= fileSize){ 
             fos.write(byte_array, 0, bytes);
             bytes = get.read(byte_array, 0, 1024);
             totalbytes += bytes;
         } 
-        
         fos.flush();
         System.out.println("File sucessfully received!");
-        fos.close();
-    }
+        fos.close();*/
     
     private static void printSocketInfo(SSLSocket s) {
         System.out.println("   Socket class: " + s.getClass());
