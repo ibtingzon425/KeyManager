@@ -1,8 +1,13 @@
 package keymanager;
+
+import keymanager.view.KeyManagerGUI;
+import keymanager.view.UserRegGUI;
+
 /**
  * @author Isabelle Tingzon
  * @author Angelu Kaye Tiu
  */
+
 public class Main {
     public static void main(String[] arg){        
         UserRegGUI urapi = new UserRegGUI();

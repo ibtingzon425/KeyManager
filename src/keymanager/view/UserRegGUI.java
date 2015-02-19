@@ -1,9 +1,10 @@
-package keymanager;
+package keymanager.view;
 
 import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
+import keymanager.SSLClient;
 
 /**
  * @author Isabelle Tingzon
