@@ -1,4 +1,4 @@
-package keymanager;
+package keymanager.dao;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -7,29 +7,37 @@ import java.io.InputStreamReader;
  * @author Isabelle Tingzon
  * @edited Angelu Kaye Tiu
  */
-public class Command {
+public class CommandDaoPiratteImpl implements CommandDao{
     
     // Executes bash commands in java
     // PIRATTE Command Line Tool by Sonia Jahid, University of Illinois at Urbana-Champaign.
     // For more information, visit: http://www.soniajahid.com	
     
-    private final String abeLocation;
-
-    public Command() {
-        this.abeLocation = System.getProperty("user.dir")+"/piratte/";
+    private final String ABEIMPL;
+    private final String ENCRYPT;
+    private final String DECRYPT;
+    
+    
+    public CommandDaoPiratteImpl() {
+        this.ABEIMPL = System.getProperty("user.dir")+"/piratte/";
+        this.ENCRYPT = ABEIMPL + "easier-enc";
+        this.DECRYPT = ABEIMPL + "easier-dec";
     }
     
-    public String encrypt(String pub_key, String file, String policy){
-        String[] command = {abeLocation + "easier-enc", pub_key, file, policy};
-        return execute(command, "easier-enc"); 
+    @Override
+    public void encrypt(String pub_key, String file, String policy) throws CommandFailedException{
+        String[] command = {ENCRYPT, pub_key, file, policy};
+        execute(command, ENCRYPT); 
     }
         
-    public String decrypt(String pub_key, String private_key, String lambda_k, String file){
-        String[] command = {abeLocation + "easier-dec", pub_key, private_key, lambda_k, file+".cpabe.proxy"};
-        return execute(command, "easier-dec"); 
+    @Override
+    public void decrypt(String pub_key, String private_key, String lambda_k, String file) throws CommandFailedException{
+        String[] command = {DECRYPT, pub_key, private_key, lambda_k, file+".cpabe.proxy"};
+        execute(command, DECRYPT); 
     } 
     
-    public String execute(String[] command, String strcom){
+    @Override
+    public void execute(String[] command, String strcom) throws CommandFailedException{
         StringBuilder output = new StringBuilder();
         ProcessBuilder pb = new ProcessBuilder(command);
         try {
@@ -48,7 +56,9 @@ public class Command {
             //returns status code of command; 0 if successful
             int status_code = p.waitFor();
             System.out.println(strcom + " exited with status code " + status_code + ".");
+
+            if (status_code!=0) throw new CommandFailedException();
         } catch (IOException | InterruptedException e) {}
-        return output.toString();
+        
     }
 }
