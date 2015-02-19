@@ -6,6 +6,8 @@ import com.amazonaws.auth.*;
 import com.amazonaws.services.s3.*;
 import com.amazonaws.services.s3.model.*;
 import java.io.*;
+import java.util.ArrayList;
+import java.util.List;
 import keymanager.dao.CommandDaoBethenImpl;
 import keymanager.dao.CommandFailedException;
 
@@ -29,7 +31,16 @@ public class AWSAPI {
         cmd = new CommandDaoBethenImpl();
     }
     
-    public void listFiles(String bucketname){
+    public List<String> getBucketList(){
+        List<String> bucketList = new ArrayList<String>();
+        for (Bucket bucket : s3client.listBuckets()) {
+            bucketList.add(bucket.getName());
+        }
+        return bucketList;
+    }
+    
+    public List<String> listFiles(String bucketname){
+        List<String> fileList = new ArrayList<String>();
         ListObjectsRequest listObjectsRequest = new ListObjectsRequest()
         .withBucketName(bucketname);
         ObjectListing objectListing;
@@ -38,19 +49,19 @@ public class AWSAPI {
             objectListing = s3client.listObjects(listObjectsRequest);
             for (S3ObjectSummary objectSummary : 
                 objectListing.getObjectSummaries()) {
-                System.out.println( " - " + objectSummary.getKey() + "  " +
-                   "(size = " + objectSummary.getSize() + ")");
+                fileList.add(objectSummary.getKey());
             }
             listObjectsRequest.setMarker(objectListing.getNextMarker());
         } while (objectListing.isTruncated());
+        return fileList;
     }
     
-    public void downloadFile(String bucketname, String filename) throws FileNotFoundException, IOException, CommandFailedException{
+    public void downloadFile(String bucketname, String filename, String dest) throws FileNotFoundException, IOException, CommandFailedException{
         System.out.println("Downloading " + filename + "...");
         S3Object s3object = s3client.getObject(new GetObjectRequest(bucketname, filename));
         System.out.println("Content-Type: "  + 	s3object.getObjectMetadata().getContentType());
         InputStream reader = new BufferedInputStream(s3object.getObjectContent());
-        File file = new File(filename);      
+        File file = new File(dest + "/" + filename);      
         OutputStream writer = new BufferedOutputStream(new FileOutputStream(file));
 
         int read = -1;
@@ -61,18 +72,16 @@ public class AWSAPI {
         writer.flush();
         writer.close();
         reader.close();
-        
         cmd.decrypt(System.getProperty("user.dir") + "/pub_key", "issas_key", "", file.getAbsolutePath());
         
     }
     
-    public void uploadFile(String filename, String policy){               
+    public void uploadFile(String filename, String policy, String bucketname){               
         try{  
             cmd.encrypt(System.getProperty("user.dir") + "/pub_key", filename, policy);
             File uploadFile = new File(filename + ".cpabe");
             if(uploadFile.exists()) {
                 System.out.println("Uploading " + filename + "...");
-                String bucketname = "cs199-testbucket";
                 s3client.putObject(bucketname, uploadFile.getName(), uploadFile);
                 System.out.println(uploadFile.getName() + " upload success.");
             }

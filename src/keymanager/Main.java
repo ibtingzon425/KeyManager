@@ -1,7 +1,7 @@
 package keymanager;
 
-import keymanager.view.KeyManagerGUI;
-import keymanager.view.UserRegGUI;
+import keymanager.view.KeyManager;
+import keymanager.view.UserReg;
 
 /**
  * @author Isabelle Tingzon
@@ -10,9 +10,9 @@ import keymanager.view.UserRegGUI;
 
 public class Main {
     public static void main(String[] arg){        
-        UserRegGUI urapi = new UserRegGUI();
-        urapi.setVisible(true);
-        KeyManagerGUI kmapi = new KeyManagerGUI();
+        //UserReg urapi = new UserReg();
+        //urapi.setVisible(true);
+        KeyManager kmapi = new KeyManager();
         kmapi.setVisible(true);
     }
 }
