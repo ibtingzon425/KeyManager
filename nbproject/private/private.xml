@@ -3,9 +3,11 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
-            <file>file:/home/issa/Dropbox/CS199/CS199/KeyManager/src/keymanager/Main.java</file>
-            <file>file:/home/issa/Dropbox/CS199/CS199/KeyManager/src/keymanager/SSLClient.java</file>
-            <file>file:/home/issa/Dropbox/CS199/CS199/KeyManager/src/keymanager/KeyManagerAPI.java</file>
+            <file>file:/Users/angelukayetiu/Desktop/KeyManager/src/keymanager/model/User.java</file>
+            <file>file:/Users/angelukayetiu/Desktop/KeyManager/src/keymanager/model/Attribute.java</file>
+            <file>file:/Users/angelukayetiu/Desktop/KeyManager/src/keymanager/dao/CommandDao.java</file>
+            <file>file:/Users/angelukayetiu/Desktop/KeyManager/src/keymanager/SSLClient.java</file>
+            <file>file:/Users/angelukayetiu/Desktop/KeyManager/src/keymanager/UserRegGUI.java</file>
         </group>
     </open-files>
 </project-private>
