@@ -1,4 +1,4 @@
-package keymanager;
+package keymanager.service;
 
 import com.amazonaws.ClientConfiguration;
 import com.amazonaws.Protocol;

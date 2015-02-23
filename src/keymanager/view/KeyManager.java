@@ -11,7 +11,7 @@ import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import keymanager.AWSAPI;
+import keymanager.service.AWSAPI;
 import keymanager.dao.CommandFailedException;
 
 /**

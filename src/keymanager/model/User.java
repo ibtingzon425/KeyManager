@@ -22,6 +22,12 @@ public class User {
         private String appSecret;
         private String firstName;
         private String lastName;
+
+    public User(String firstName, String lastName, String password) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+    }
         
       	public Long getId() {
 		return id;

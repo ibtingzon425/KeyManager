@@ -4,8 +4,8 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
-import keymanager.SSLClient;
-import keymanager.SSLClientErrorException;
+import keymanager.service.SSLClient;
+import keymanager.service.SSLClientErrorException;
 import keymanager.model.User;
 import keymanager.service.UserRegService;
 import keymanager.service.UserRegServiceImpl;
@@ -366,19 +366,8 @@ public class UserReg extends javax.swing.JFrame {
     }//GEN-LAST:event_encryptStatusActionPerformed
 
     private void GenerateKeysActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GenerateKeysActionPerformed
-        String host = hostTextField.getText();
-        int port = Integer.parseInt(portTextField.getText());
-        String pubKey = PubKeyTextField.getText();
-        String password = PwdTextField.getText();
 
-        try {
-            userRegService.generateKeys(host, port, pubKey, password);
-            encryptStatus.setText("Keys generated successfully");
-            GenerateKeys.setEnabled(false);
-            
-        } catch (SSLClientErrorException ex) {
-            encryptStatus.setText("Error in generating keys.");
-        }
+            GenerateKeys.setEnabled(false);            
 
     }//GEN-LAST:event_GenerateKeysActionPerformed
 
@@ -403,7 +392,7 @@ public class UserReg extends javax.swing.JFrame {
         String retypePassword = retypePasswordTextField.getText().trim();
                 
         try {
-            RegistrationValidator.validate(firstName, lastName, password, retypePassword);
+            RegistrationValidator.validateUser(firstName, lastName, password, retypePassword);
 
             User user = new User (firstName, lastName, password);
             userRegService.setUser(user);
@@ -420,9 +409,24 @@ public class UserReg extends javax.swing.JFrame {
     }//GEN-LAST:event_regNextButtonActionPerformed
 
     private void ConfigNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConfigNextActionPerformed
-        KeyManager.setEnabledAt(2, true);
-        KeyManager.setEnabledAt(1, false);
-        KeyManager.setSelectedIndex(2);
+        String host = hostTextField.getText().trim();
+        int port = Integer.parseInt(portTextField.getText().trim());
+        String pubKey = PubKeyTextField.getText().trim();
+        String password = PwdTextField.getText().trim();
+
+        try {
+            RegistrationValidator.validateConfig(host, port, pubKey, password);
+            userRegService.configureConnection(host, port, pubKey, password);
+            KeyManager.setEnabledAt(2, true);
+            KeyManager.setEnabledAt(1, false);
+            KeyManager.setSelectedIndex(2);
+            
+        } catch (SSLClientErrorException ex) {
+            JOptionPane.showMessageDialog(this, "Connection Error", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (InvalidRegistrationException ex) {
+             JOptionPane.showMessageDialog(this, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
+          
+        }
     }//GEN-LAST:event_ConfigNextActionPerformed
    
     public static void main(String args[]) {

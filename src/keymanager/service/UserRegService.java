@@ -5,7 +5,7 @@
  */
 package keymanager.service;
 
-import keymanager.SSLClientErrorException;
+import keymanager.model.User;
 
 /**
  *
@@ -14,7 +14,9 @@ import keymanager.SSLClientErrorException;
 
 public interface UserRegService {
 
-    public void generateKeys(String host, int port, String pubKey, String password) throws SSLClientErrorException;
+    public void configureConnection(String host, int port, String pubKey, String password) throws SSLClientErrorException;
+
+    public void setUser(User user);
     
      
     

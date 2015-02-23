@@ -1,4 +1,4 @@
-package keymanager;
+package keymanager.view;
 
 import keymanager.view.KeyManager;
 import keymanager.view.UserReg;
