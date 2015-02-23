@@ -11,17 +11,7 @@ package keymanager.model;
  */
 
 import java.util.List;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
-@Entity
 public class User {
 	
 	private Long id;
@@ -33,35 +23,27 @@ public class User {
         private String firstName;
         private String lastName;
         
-        
-	@Id
-	@GeneratedValue(strategy= GenerationType.AUTO)
-	@Column(name="key_user")
-	public Long getId() {
+      	public Long getId() {
 		return id;
 	}
 	public void setId(Long id) {
 		this.id = id;
 	}
 	
-	@Column(unique=true, nullable=false, name="fld_username")
 	public String getUsername() {
 		return username;
 	}
 	public void setUsername(String username) {
 		this.username = username;
 	}
-	
-	@Column(nullable=false, name="fld_password")
-	public String getPassword() {
+
+        public String getPassword() {
 		return password;
 	}
 	public void setPassword(String password) {
 		this.password = password;
 	}
 	
-	@OneToOne(cascade=CascadeType.ALL)
-	@JoinColumn(name="key_attribute")
 	public List<Attribute> getAttribute() {
 		return attributeList;
 	}
@@ -85,7 +67,6 @@ public class User {
             this.appSecret = appSecret;
         }
 
-	@Column(nullable=false)
         public String getFirstName() {
             return firstName;
         }
@@ -94,7 +75,6 @@ public class User {
             this.firstName = firstName;
         }
 
-	@Column(nullable=false)
         public String getLastName() {
             return lastName;
         }

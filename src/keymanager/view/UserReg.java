@@ -5,6 +5,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 import keymanager.SSLClient;
+import keymanager.validator.InvalidRegistration;
+import keymanager.validator.RegistrationValidator;
+import keymanager.validator.PasswordDoesNotMatch;
 
 /**
  * @author Isabelle Tingzon
@@ -44,11 +47,11 @@ public class UserReg extends javax.swing.JFrame {
         jLabel6 = new javax.swing.JLabel();
         firstNameTextField = new javax.swing.JTextField();
         lastNameTextField = new javax.swing.JTextField();
-        passWordTextField = new javax.swing.JTextField();
-        retypePasswordTextField = new javax.swing.JTextField();
         regNextButton = new javax.swing.JButton();
         jLabel14 = new javax.swing.JLabel();
         jLabel15 = new javax.swing.JLabel();
+        passwordTextField = new javax.swing.JPasswordField();
+        retypePasswordTextField = new javax.swing.JPasswordField();
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
@@ -105,29 +108,32 @@ public class UserReg extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addComponent(jLabel15, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(133, 133, 133))
                     .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addGroup(jPanel2Layout.createSequentialGroup()
                             .addGap(67, 67, 67)
                             .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(lastNameTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addGroup(jPanel2Layout.createSequentialGroup()
-                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(jLabel3)
-                                            .addComponent(jLabel6)
-                                            .addComponent(jLabel4)
-                                            .addComponent(jLabel5))
-                                        .addGap(57, 57, 57)
-                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                                            .addComponent(passWordTextField)
-                                            .addComponent(firstNameTextField)
-                                            .addComponent(retypePasswordTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 185, Short.MAX_VALUE))))
+                                .addGroup(jPanel2Layout.createSequentialGroup()
+                                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addComponent(jLabel3)
+                                        .addComponent(jLabel6)
+                                        .addComponent(jLabel4)
+                                        .addComponent(jLabel5))
+                                    .addGap(57, 57, 57)
+                                    .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                            .addComponent(lastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                            .addComponent(firstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                        .addComponent(passwordTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                        .addComponent(retypePasswordTextField, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 185, javax.swing.GroupLayout.PREFERRED_SIZE))
+                                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 133, Short.MAX_VALUE))
                                 .addComponent(regNextButton, javax.swing.GroupLayout.PREFERRED_SIZE, 83, javax.swing.GroupLayout.PREFERRED_SIZE)))
                         .addGroup(jPanel2Layout.createSequentialGroup()
                             .addGap(174, 174, 174)
                             .addComponent(jLabel14))))
-                .addContainerGap(135, Short.MAX_VALUE))
+                .addGap(26, 26, 26))
         );
         jPanel2Layout.setVerticalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -135,26 +141,27 @@ public class UserReg extends javax.swing.JFrame {
                 .addGap(34, 34, 34)
                 .addComponent(jLabel14)
                 .addGap(27, 27, 27)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel3)
-                    .addComponent(firstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(26, 26, 26)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel6)
-                    .addComponent(lastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(28, 28, 28)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(passWordTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel4))
-                .addGap(26, 26, 26)
-                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(jLabel5)
-                    .addComponent(retypePasswordTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(jPanel2Layout.createSequentialGroup()
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel3)
+                            .addComponent(firstNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(26, 26, 26)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel6)
+                            .addComponent(lastNameTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(28, 28, 28)
+                        .addGroup(jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                            .addComponent(jLabel4)
+                            .addComponent(passwordTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addGap(28, 28, 28)
+                        .addComponent(retypePasswordTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(jLabel5))
+                .addGap(49, 49, 49)
                 .addComponent(jLabel15)
                 .addGap(4, 4, 4)
                 .addComponent(regNextButton)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(31, Short.MAX_VALUE))
         );
 
         KeyManager.addTab("Register", jPanel2);
@@ -353,7 +360,7 @@ public class UserReg extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(KeyManager, javax.swing.GroupLayout.DEFAULT_SIZE, 385, Short.MAX_VALUE)
+            .addComponent(KeyManager)
         );
 
         pack();
@@ -401,10 +408,27 @@ public class UserReg extends javax.swing.JFrame {
 
     private void regNextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regNextButtonActionPerformed
         USERNAME = firstNameTextField.getText() + lastNameTextField.getText();
-        PASSWORD = passWordTextField.getText();
-        KeyManager.setEnabledAt(1, true);
-        KeyManager.setEnabledAt(0, false);
-        KeyManager.setSelectedIndex(1);
+        PASSWORD = passwordTextField.getText();
+        
+        /* get input from form */
+        String firstName = firstNameTextField.getText().trim();
+        String lastName = lastNameTextField.getText().trim();
+        String password = passwordTextField.getText().trim();
+        String retypePassword = retypePasswordTextField.getText().trim();
+                
+        try {
+            RegistrationValidator.validate(firstName, lastName, password, retypePassword);
+            KeyManager.setEnabledAt(1, true);
+            KeyManager.setEnabledAt(0, false);
+            KeyManager.setSelectedIndex(1);
+        } catch (InvalidRegistration ex) {
+            JOptionPane.showMessageDialog(this, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
+        } catch (PasswordDoesNotMatch ex) {
+            JOptionPane.showMessageDialog(this, "Password does not match", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+        
+        
+
     }//GEN-LAST:event_regNextButtonActionPerformed
 
     private void ConfigNextActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_ConfigNextActionPerformed
@@ -494,11 +518,11 @@ public class UserReg extends javax.swing.JFrame {
     private javax.swing.JToolBar jToolBar1;
     private javax.swing.JTextField lastNameTextField;
     private javax.swing.JTextField mkTextField;
-    private javax.swing.JTextField passWordTextField;
+    private javax.swing.JPasswordField passwordTextField;
     private javax.swing.JTextField pkTextField;
     private javax.swing.JTextField port;
     private javax.swing.JButton regNextButton;
-    private javax.swing.JTextField retypePasswordTextField;
+    private javax.swing.JPasswordField retypePasswordTextField;
     private javax.swing.JTextField skTextField;
     // End of variables declaration//GEN-END:variables
 }
