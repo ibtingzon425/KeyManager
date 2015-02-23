@@ -8,6 +8,7 @@ import com.amazonaws.services.s3.model.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import javax.swing.JOptionPane;
 import keymanager.dao.CommandDaoBethenImpl;
 import keymanager.dao.CommandFailedException;
 
@@ -18,16 +19,21 @@ public class AWSAPI {
     
     private AmazonS3 s3client;
     private CommandDaoBethenImpl cmd; 
-        
-    public AWSAPI (){
+    
+    private String ACCESSKEYID;
+    private String SECRETKEY;
+    
+    public AWSAPI (String id, String key){
         //AmazonS3 s3client = new AmazonS3Client(new ProfileCredentialsProvider(), clientConfig);      
+        this.ACCESSKEYID = id;
+        this.SECRETKEY = key;
         AWSCredentials credentials = new BasicAWSCredentials
-            ("AKIAICHY5XUYPJQBF7FA", "j//Xjvf6CryyoxkjhVx8jz9nsrpipN/HkJfvHFdW");  
+            (ACCESSKEYID, SECRETKEY);  
         ClientConfiguration clientConfig = new ClientConfiguration();
         clientConfig.setProtocol(Protocol.HTTPS);
         clientConfig.setProxyHost("proxy8.upd.edu.ph");
         clientConfig.setProxyPort(8080);
-        s3client = new AmazonS3Client(credentials); 
+        s3client = new AmazonS3Client(credentials,clientConfig); 
         cmd = new CommandDaoBethenImpl();
     }
     

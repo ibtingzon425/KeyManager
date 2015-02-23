@@ -32,7 +32,7 @@ public class SSLClient{
     }
     
     //TODO find a way to send multiple files without having to close/open multiple client sockets.         
-    public boolean generateKeys() throws Exception {
+    public void generateKeys() throws SSLClientErrorException {
          try {
         //Initialize SSL Properties
             System.setProperty("javax.net.ssl.trustStore", PUBKEY);
@@ -97,12 +97,9 @@ public class SSLClient{
             /*writeLine = "delete";
             streamOut.writeUTF(writeLine);
             streamOut.flush();*/
-            
-            return true;
-         } catch (Exception e) {
-            e.printStackTrace();
+         } catch (IOException | NumberFormatException e) {
+            throw new SSLClientErrorException();
          }
-         return false;
     }
    
     private void getFile(SSLSocket socket, String get_filename, int fileSize) throws IOException{

@@ -16,11 +16,11 @@ public class RegistrationValidator {
     private String password;
     private String retypePassword;
     */
-    public static void validate(String firstName, String lastName, String password, String retypePassword) throws InvalidRegistration, PasswordDoesNotMatch{
+    public static void validate(String firstName, String lastName, String password, String retypePassword) throws InvalidRegistrationException, PasswordException{
         if (firstName.isEmpty() || lastName.isEmpty() || password.isEmpty() || retypePassword.isEmpty())
-            throw new InvalidRegistration();
+            throw new InvalidRegistrationException();
         if (!password.equals(retypePassword))
-            throw new PasswordDoesNotMatch();
+            throw new PasswordException();
     }
     
 }

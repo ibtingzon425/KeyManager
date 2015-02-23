@@ -5,33 +5,28 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
 import keymanager.SSLClient;
-import keymanager.validator.InvalidRegistration;
+import keymanager.SSLClientErrorException;
+import keymanager.model.User;
+import keymanager.service.UserRegService;
+import keymanager.service.UserRegServiceImpl;
+import keymanager.validator.InvalidRegistrationException;
 import keymanager.validator.RegistrationValidator;
-import keymanager.validator.PasswordDoesNotMatch;
+import keymanager.validator.PasswordException;
 
 /**
  * @author Isabelle Tingzon
  */
 public class UserReg extends javax.swing.JFrame {
     
-    private SSLClient client;
-    private String HOST;
-    private String PUBKEY;
-    private String PWD;
-    private String USERNAME;
-    private String PASSWORD;
-    private int PORT;    
-
+    private UserRegService userRegService;
+    
     public UserReg() {
         setResizable(false);
-        HOST = "localhost";
-        PUBKEY = null;
-        PORT = 4000;
-        USERNAME = "";
-        PASSWORD = "";
         initComponents();
         KeyManager.setEnabledAt(1, false);
         KeyManager.setEnabledAt(2, false);
+        
+        userRegService = new UserRegServiceImpl();
     }
     
     @SuppressWarnings("unchecked")
@@ -55,8 +50,8 @@ public class UserReg extends javax.swing.JFrame {
         jPanel1 = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
         jLabel2 = new javax.swing.JLabel();
-        host = new javax.swing.JTextField();
-        port = new javax.swing.JTextField();
+        hostTextField = new javax.swing.JTextField();
+        portTextField = new javax.swing.JTextField();
         jLabel9 = new javax.swing.JLabel();
         PubKeyTextField = new javax.swing.JTextField();
         BrowsePubKey = new javax.swing.JButton();
@@ -170,9 +165,9 @@ public class UserReg extends javax.swing.JFrame {
 
         jLabel2.setText("Port Number");
 
-        host.setText("localhost");
+        hostTextField.setText("localhost");
 
-        port.setText("4000");
+        portTextField.setText("4000");
 
         jLabel9.setText("Key Store File");
 
@@ -215,7 +210,7 @@ public class UserReg extends javax.swing.JFrame {
                         .addGap(18, 18, 18)
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addGroup(jPanel1Layout.createSequentialGroup()
-                                .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addComponent(portTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addGap(0, 199, Short.MAX_VALUE))
                             .addGroup(jPanel1Layout.createSequentialGroup()
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -229,7 +224,7 @@ public class UserReg extends javax.swing.JFrame {
                         .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                             .addComponent(jLabel1)
                             .addGap(51, 51, 51)
-                            .addComponent(host, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addComponent(hostTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 144, javax.swing.GroupLayout.PREFERRED_SIZE))
                         .addComponent(jLabel7)))
                 .addGap(51, 51, 51))
         );
@@ -241,11 +236,11 @@ public class UserReg extends javax.swing.JFrame {
                 .addGap(28, 28, 28)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel1)
-                    .addComponent(host, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(hostTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(33, 33, 33)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel2)
-                    .addComponent(port, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(portTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
                 .addGap(35, 35, 35)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jLabel9)
@@ -371,26 +366,20 @@ public class UserReg extends javax.swing.JFrame {
     }//GEN-LAST:event_encryptStatusActionPerformed
 
     private void GenerateKeysActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_GenerateKeysActionPerformed
-        HOST = host.getText();
-        PORT = Integer.parseInt(port.getText());
-        PUBKEY = PubKeyTextField.getText();
-        PWD = PwdTextField.getText();
+        String host = hostTextField.getText();
+        int port = Integer.parseInt(portTextField.getText());
+        String pubKey = PubKeyTextField.getText();
+        String password = PwdTextField.getText();
 
-        client = new SSLClient(USERNAME, HOST, PORT, PUBKEY, PWD);
-
-        boolean success = false;
         try {
-            success = client.generateKeys();
-            if (success){
-                encryptStatus.setText("Keys generated successfully");
-                GenerateKeys.setEnabled(false);
-            }
-        } catch (Exception ex) {
-            Logger.getLogger(UserReg.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        if (!success){
+            userRegService.generateKeys(host, port, pubKey, password);
+            encryptStatus.setText("Keys generated successfully");
+            GenerateKeys.setEnabled(false);
+            
+        } catch (SSLClientErrorException ex) {
             encryptStatus.setText("Error in generating keys.");
         }
+
     }//GEN-LAST:event_GenerateKeysActionPerformed
 
     private void PwdTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_PwdTextFieldActionPerformed
@@ -407,9 +396,6 @@ public class UserReg extends javax.swing.JFrame {
     }//GEN-LAST:event_BrowsePubKeyActionPerformed
 
     private void regNextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_regNextButtonActionPerformed
-        USERNAME = firstNameTextField.getText() + lastNameTextField.getText();
-        PASSWORD = passwordTextField.getText();
-        
         /* get input from form */
         String firstName = firstNameTextField.getText().trim();
         String lastName = lastNameTextField.getText().trim();
@@ -418,16 +404,18 @@ public class UserReg extends javax.swing.JFrame {
                 
         try {
             RegistrationValidator.validate(firstName, lastName, password, retypePassword);
+
+            User user = new User (firstName, lastName, password);
+            userRegService.setUser(user);
+            
             KeyManager.setEnabledAt(1, true);
             KeyManager.setEnabledAt(0, false);
             KeyManager.setSelectedIndex(1);
-        } catch (InvalidRegistration ex) {
+        } catch (InvalidRegistrationException ex) {
             JOptionPane.showMessageDialog(this, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
-        } catch (PasswordDoesNotMatch ex) {
+        } catch (PasswordException ex) {
             JOptionPane.showMessageDialog(this, "Password does not match", "Error", JOptionPane.ERROR_MESSAGE);
-        }
-        
-        
+        }   
 
     }//GEN-LAST:event_regNextButtonActionPerformed
 
@@ -494,7 +482,7 @@ public class UserReg extends javax.swing.JFrame {
     private javax.swing.JPasswordField PwdTextField;
     private javax.swing.JTextField encryptStatus;
     private javax.swing.JTextField firstNameTextField;
-    private javax.swing.JTextField host;
+    private javax.swing.JTextField hostTextField;
     private javax.swing.JButton jButton1;
     private javax.swing.JButton jButton2;
     private javax.swing.JLabel jLabel1;
@@ -520,7 +508,7 @@ public class UserReg extends javax.swing.JFrame {
     private javax.swing.JTextField mkTextField;
     private javax.swing.JPasswordField passwordTextField;
     private javax.swing.JTextField pkTextField;
-    private javax.swing.JTextField port;
+    private javax.swing.JTextField portTextField;
     private javax.swing.JButton regNextButton;
     private javax.swing.JPasswordField retypePasswordTextField;
     private javax.swing.JTextField skTextField;

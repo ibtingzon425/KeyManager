@@ -9,22 +9,22 @@ package keymanager.validator;
  *
  * @author angelukayetiu
  */
-public class InvalidRegistration extends Exception {
+public class PasswordException extends Exception {
 
     /**
-     * Creates a new instance of <code>InvalidRegistration</code> without detail
-     * message.
+     * Creates a new instance of <code>passwordDoesNotMatch</code> without
+     * detail message.
      */
-    public InvalidRegistration() {
+    public PasswordException() {
     }
 
     /**
-     * Constructs an instance of <code>InvalidRegistration</code> with the
+     * Constructs an instance of <code>passwordDoesNotMatch</code> with the
      * specified detail message.
      *
      * @param msg the detail message.
      */
-    public InvalidRegistration(String msg) {
+    public PasswordException(String msg) {
         super(msg);
     }
 }

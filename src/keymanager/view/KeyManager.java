@@ -8,6 +8,7 @@ import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
+import javax.swing.JOptionPane;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import keymanager.AWSAPI;
@@ -16,7 +17,7 @@ import keymanager.dao.CommandFailedException;
 /**
  * @author Isabelle Tingzon
  */
-public final class KeyManager extends javax.swing.JFrame {
+public class KeyManager extends javax.swing.JFrame {
     
     private DefaultListModel bucketListModel;   
     private DefaultListModel fileListModel;
@@ -24,7 +25,11 @@ public final class KeyManager extends javax.swing.JFrame {
     
     public KeyManager() {
         initComponents();
-        awsapi = new AWSAPI();
+
+        String ACCESSKEYID= JOptionPane.showInputDialog(this, "Input Access Key Id", "Message", JOptionPane.PLAIN_MESSAGE);
+        String SECERTACCESSKEY = JOptionPane.showInputDialog(this, "Input Secret Access Key", "Message", JOptionPane.PLAIN_MESSAGE);
+        awsapi = new AWSAPI(ACCESSKEYID, SECERTACCESSKEY);
+        
         initializeBucketList(bucketList);
         initializeBucketList(bucketList2);
         initializeFileList();
