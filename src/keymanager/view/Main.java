@@ -12,8 +12,10 @@ public class Main {
     public static void main(String[] arg){        
         //UserReg urapi = new UserReg();
         //urapi.setVisible(true);
-        KeyManager kmapi = new KeyManager();
-        kmapi.setVisible(true);
+        //KeyManager kmapi = new KeyManager();
+        //kmapi.setVisible(true);
+        Init init = new Init();
+        init.setVisible(true);
     }
 }
         /*Command com = new Command();

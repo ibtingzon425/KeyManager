@@ -8,7 +8,6 @@ import com.amazonaws.services.s3.model.*;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
-import javax.swing.JOptionPane;
 import keymanager.dao.CommandDaoBethenImpl;
 import keymanager.dao.CommandFailedException;
 
@@ -33,7 +32,7 @@ public class AWSAPI {
         clientConfig.setProtocol(Protocol.HTTPS);
         clientConfig.setProxyHost("proxy8.upd.edu.ph");
         clientConfig.setProxyPort(8080);
-        s3client = new AmazonS3Client(credentials,clientConfig); 
+        s3client = new AmazonS3Client(credentials); 
         cmd = new CommandDaoBethenImpl();
     }
     

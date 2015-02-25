@@ -123,26 +123,8 @@ public class SSLClient{
         bos.flush();
         System.out.println("File " + get_filename
             + " downloaded (" + current + " bytes read)");
-    }
-    
-    //This piece of code won't work for Binary Files :P
-    /*  int bytes = 0;
-        String filename = get_filename;
-        put.println(filename);
-        File file = new File(filename);
-        OutputStream  fos = new FileOutputStream(new File(file.toString()));
-        byte byte_array[] = new byte[1024];
-        int totalbytes = 0;
-
-        while(totalbytes <= fileSize){ 
-            fos.write(byte_array, 0, bytes);
-            bytes = get.read(byte_array, 0, 1024);
-            totalbytes += bytes;
-        } 
-        fos.flush();
-        System.out.println("File sucessfully received!");
-        fos.close();*/
-    
+    } 
+  
     private static void printSocketInfo(SSLSocket s) {
         System.out.println("   Socket class: " + s.getClass());
         System.out.println("   Remote address = " + s.getInetAddress().toString());
