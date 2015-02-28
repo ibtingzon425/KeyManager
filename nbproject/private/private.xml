@@ -3,10 +3,10 @@
     <editor-bookmarks xmlns="http://www.netbeans.org/ns/editor-bookmarks/2" lastBookmarkId="0"/>
     <open-files xmlns="http://www.netbeans.org/ns/projectui-open-files/2">
         <group>
+            <file>file:/Users/angelukayetiu/Desktop/KeyManager/src/keymanager/service/UserRegServiceImpl.java</file>
+            <file>file:/Users/angelukayetiu/Desktop/KeyManager/src/keymanager/service/SSLClient.java</file>
             <file>file:/Users/angelukayetiu/Desktop/KeyManager/src/keymanager/model/User.java</file>
-            <file>file:/Users/angelukayetiu/Desktop/KeyManager/src/keymanager/model/Attribute.java</file>
-            <file>file:/Users/angelukayetiu/Desktop/KeyManager/src/keymanager/dao/CommandDao.java</file>
-            <file>file:/Users/angelukayetiu/Desktop/KeyManager/src/keymanager/SSLClient.java</file>
+            <file>file:/Users/angelukayetiu/Desktop/KeyManager/src/keymanager/view/UserReg.java</file>
         </group>
     </open-files>
 </project-private>
