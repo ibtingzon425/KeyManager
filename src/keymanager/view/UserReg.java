@@ -4,10 +4,8 @@ import java.io.File;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
-import keymanager.service.SSLClient;
 import keymanager.service.SSLClientErrorException;
 import keymanager.model.User;
-import keymanager.service.UserRegService;
 import keymanager.service.UserRegServiceImpl;
 import keymanager.validator.InvalidRegistrationException;
 import keymanager.validator.RegistrationValidator;
@@ -18,7 +16,7 @@ import keymanager.validator.PasswordException;
  */
 public class UserReg extends javax.swing.JFrame {
     
-    private UserRegService userRegService;
+    private final UserRegServiceImpl userRegService;
     
     public UserReg() {
         setResizable(false);
@@ -338,7 +336,7 @@ public class UserReg extends javax.swing.JFrame {
                     .addComponent(skTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jLabel12)
                     .addComponent(jButton2))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 117, Short.MAX_VALUE)
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(GenerateKeys)
                     .addComponent(encryptStatus, javax.swing.GroupLayout.PREFERRED_SIZE, 24, javax.swing.GroupLayout.PREFERRED_SIZE))
@@ -395,7 +393,7 @@ public class UserReg extends javax.swing.JFrame {
             RegistrationValidator.validateUser(firstName, lastName, password, retypePassword);
 
             User user = new User (firstName, lastName, password);
-            userRegService.setUser(user);
+            //userRegService.setUser(user);
             
             KeyManager.setEnabledAt(1, true);
             KeyManager.setEnabledAt(0, false);
@@ -421,11 +419,11 @@ public class UserReg extends javax.swing.JFrame {
             KeyManager.setEnabledAt(1, false);
             KeyManager.setSelectedIndex(2);
             
-        } catch (SSLClientErrorException ex) {
-            JOptionPane.showMessageDialog(this, "Connection Error", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (InvalidRegistrationException ex) {
              JOptionPane.showMessageDialog(this, "Invalid input", "Error", JOptionPane.ERROR_MESSAGE);
           
+        } catch (SSLClientErrorException ex) {
+            Logger.getLogger(UserReg.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_ConfigNextActionPerformed
    

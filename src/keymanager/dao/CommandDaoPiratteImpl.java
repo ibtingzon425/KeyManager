@@ -32,7 +32,7 @@ public class CommandDaoPiratteImpl implements CommandDao{
         
     @Override
     public void decrypt(String pub_key, String private_key, String lambda_k, String file) throws CommandFailedException{
-        String[] command = {DECRYPT, pub_key, private_key, lambda_k, file+".cpabe.proxy"};
+        String[] command = {DECRYPT, pub_key, private_key, lambda_k, file};
         execute(command, DECRYPT); 
     } 
     

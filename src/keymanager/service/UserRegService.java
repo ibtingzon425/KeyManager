@@ -18,6 +18,4 @@ public interface UserRegService {
 
     public void setUser(User user);
     
-     
-    
 }

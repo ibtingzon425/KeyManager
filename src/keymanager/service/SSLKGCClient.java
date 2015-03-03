@@ -7,7 +7,7 @@ import javax.net.ssl.*;
  * @author Isabelle Tingzon
  * @author Angelu Kaye Tiu
  */
-public class SSLClient{
+public class SSLKGCClient{
     
     protected String HOST;
     protected String PUBKEY;
@@ -20,7 +20,7 @@ public class SSLClient{
     private DataInputStream streamIn =  null;
     private SSLSocketFactory factory;
     
-    public SSLClient(String username, String host, int port, String pubkey, String password){
+    public SSLKGCClient(String username, String host, int port, String pubkey, String password){
         String dir = System.getProperty("user.dir");
         USERNAME = username;
         HOST = host;

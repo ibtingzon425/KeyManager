@@ -1,6 +1,11 @@
 package keymanager.service;
 
 import java.io.*;
+import java.security.NoSuchAlgorithmException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.net.ssl.*;
 
 /**
@@ -9,38 +14,41 @@ import javax.net.ssl.*;
  */
 public class SSLProxyClient{
     
-    private String HOST;
-    private String PUBKEY;
-    private String USERNAME;
-    private String PWD;
-    private int PORT;
+    private final String HOST;
+    private final String PUBKEY;
+    private final String USERNAME;
+    private final String PWD;
+    private final int PORT;
+    private final String cpabeFilename;
         
-    public SSLProxyClient(String username, String host, int port, String pubkey, String password){
+    public SSLProxyClient(String username, String host, int port, String pubkey, String password, String filename){
         USERNAME = username;
         HOST = host;
         PORT = port;
         String dir = System.getProperty("user.dir");
         PUBKEY = dir + "/SSLkeys/public.jks";
         PWD = "password";
+        cpabeFilename = filename;
         //PUBKEY = pubkey;
         //PWD = password;
     }
     
+    
     //TODO find a way to send multiple files without having to close/open multiple client sockets.         
-    public void generateKeys() throws SSLClientErrorException {
+    public void proxyReEncrypt() throws SSLClientErrorException, NoSuchAlgorithmException {
          try {
             //Initialize SSL Properties
             System.setProperty("javax.net.ssl.trustStore", PUBKEY);
             System.setProperty("javax.net.ssl.keyStorePassword", PWD);
-            SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-            
+                        
+            SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();                        
             SSLSocket socket = (SSLSocket) factory.createSocket(HOST, PORT);
             socket.startHandshake();
             DataOutputStream streamOut = new DataOutputStream(socket.getOutputStream());
             DataInputStream  streamIn = new DataInputStream(new BufferedInputStream(socket.getInputStream())); 
             
-            File newFile = new File("a.txt.cpabe");
-             
+            File newFile = new File(cpabeFilename);
+            
             //Client sends message
             String message = "re-encrypt";
             streamOut.writeUTF(message);
@@ -74,7 +82,7 @@ public class SSLProxyClient{
             System.out.println(proxy_filename);
             
             //Client receives file and closes socket
-            this.getFile(socket, proxy_filename, proxy_filesize);
+            this.getFile(socket, newFile.getAbsolutePath() + ".proxy", proxy_filesize);
             socket.close();
             
             //Client opens new connection in able to retrive lambda_k
@@ -109,6 +117,7 @@ public class SSLProxyClient{
             socket.close();
             
          } catch (IOException | NumberFormatException e) {
+             e.printStackTrace();
             throw new SSLClientErrorException();
          }
     }
