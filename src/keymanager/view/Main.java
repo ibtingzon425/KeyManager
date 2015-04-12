@@ -1,8 +1,5 @@
 package keymanager.view;
 
-import keymanager.view.KeyManager;
-import keymanager.view.UserReg;
-
 /**
  * @author Isabelle Tingzon
  * @author Angelu Kaye Tiu
@@ -10,12 +7,10 @@ import keymanager.view.UserReg;
 
 public class Main {
     public static void main(String[] arg){        
-        //UserReg urapi = new UserReg();
-        //urapi.setVisible(true);
-        //KeyManager kmapi = new KeyManager();
-        //kmapi.setVisible(true);
-        Init init = new Init();
-        init.setVisible(true);
+        KeyManager kmapi = new KeyManager();
+        KGCClient kgc = new KGCClient();
+        //kgc.setVisible(true);
+        kmapi.setVisible(true);
     }
 }
         /*Command com = new Command();

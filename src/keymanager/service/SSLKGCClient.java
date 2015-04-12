@@ -9,94 +9,115 @@ import javax.net.ssl.*;
  */
 public class SSLKGCClient{
     
-    protected String HOST;
-    protected String PUBKEY;
-    protected String USERNAME;
-    protected String PWD;
-    protected int PORT;
+    private final String HOST;
+    private final String PUBKEY;
+    private final String PWD;
+    private final int PORT;
+    
+    private String USERID;
+    private String ATTR;
     
     private DataInputStream  console   = null;
     private DataOutputStream streamOut = null;
     private DataInputStream streamIn =  null;
     private SSLSocketFactory factory;
     
-    public SSLKGCClient(String username, String host, int port, String pubkey, String password){
+    public SSLKGCClient(String host, int port, String pubkey, String password){
         String dir = System.getProperty("user.dir");
-        USERNAME = username;
         HOST = host;
         PORT = port;
-        //PUBKEY = pubkey;
-        PUBKEY = dir + "/SSLkeys/public.jks";
-        //PWD = password;
-        PWD = "password";
+        PUBKEY = dir + "/SSLkeys/public.jks"; //PUBKEY = pubkey;
+        PWD = "password"; //PWD = password;
     }
     
     //TODO find a way to send multiple files without having to close/open multiple client sockets.         
-    public void generateKeys() throws SSLClientErrorException {
-         try {
-        //Initialize SSL Properties
+    public void fetchKeys(String userid, String attributes) throws SSLClientErrorException {
+        USERID = userid;
+        ATTR = attributes; 
+        try {
+            //Initialize SSL Properties
             System.setProperty("javax.net.ssl.trustStore", PUBKEY);
             System.setProperty("javax.net.ssl.keyStorePassword", PWD);
             factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
             
-        //MASTER_KEY
+            //MASTER_KEY
             SSLSocket socket = (SSLSocket) factory.createSocket(HOST, PORT);
             socket.startHandshake();
             streamOut = new DataOutputStream(socket.getOutputStream());
             streamIn = new DataInputStream(new BufferedInputStream(socket.getInputStream()));            
             
-        //Client sends message "master_key"
+            //Client sends message "master_key"
             String writeLine = "master_key";
             streamOut.writeUTF(writeLine);
             streamOut.flush();
         
-        //Client reads mk filesize
+            //Client reads mk filesize
             String filesize = streamIn.readUTF();
-            System.out.println(filesize);
             
-        //Client recieves master_key and closes socket
+            //Client recieves master_key and closes socket
             getFile(socket, writeLine, Integer.parseInt(filesize));
             socket.close();
             
-        //PUBLIC_KEY
+            //PUBLIC_KEY
             socket = (SSLSocket) factory.createSocket(HOST, PORT);
             socket.startHandshake();
             streamOut = new DataOutputStream(socket.getOutputStream());
             streamIn = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
             
-        //Client sends message "public_key"
+            //Client sends message "public_key"
             writeLine = "pub_key";
             streamOut.writeUTF(writeLine);
             streamOut.flush();
             
-        //Client reads pk filesize
+            //Client reads pk filesize
             filesize = streamIn.readUTF();
-            System.out.println(filesize);
         
-        //Client recieves public_key and closes socket
+            //Client recieves public_key and closes socket
             getFile(socket, writeLine, Integer.parseInt(filesize));
             socket.close();
             
-        //ATTRIBUTES/SECRET_KEY
+            //ATTRIBUTES/SECRET_KEY
             socket = (SSLSocket) factory.createSocket(HOST, PORT);
             socket.startHandshake();
             streamOut = new DataOutputStream(socket.getOutputStream());
             streamIn = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
         
-        //Client sends message "attributes", requesting for attributes
-            writeLine = "attributes";
+            //Client sends message "secret_key", requesting for the secret key
+            writeLine = "secret_key";
             streamOut.writeUTF(writeLine);
             streamOut.flush();
         
-        //Client send Username
-            writeLine = USERNAME;
+            //Client send Username
+            writeLine = USERID;
             streamOut.writeUTF(writeLine);
             streamOut.flush();
             
-        //Client sends message indicating to delete the keys
-            /*writeLine = "delete";
+            //Client sends Attributes
+            writeLine = ATTR;
             streamOut.writeUTF(writeLine);
-            streamOut.flush();*/
+            streamOut.flush();
+            
+            //Client reads pk filesize
+            filesize = streamIn.readUTF();
+            
+            getFile(socket, USERID, Integer.parseInt(filesize));
+            socket.close();
+            
+            //Client sends message indicating to delete the key
+            socket = (SSLSocket) factory.createSocket(HOST, PORT);
+            socket.startHandshake();
+            streamOut = new DataOutputStream(socket.getOutputStream());
+            streamIn = new DataInputStream(new BufferedInputStream(socket.getInputStream()));
+        
+            writeLine = "remove";
+            streamOut.writeUTF(writeLine);
+            streamOut.flush();
+            
+            writeLine = USERID;
+            streamOut.writeUTF(writeLine);
+            streamOut.flush();
+            
+            socket.close();
          } catch (IOException | NumberFormatException e) {
             throw new SSLClientErrorException();
          }
@@ -124,16 +145,4 @@ public class SSLKGCClient{
         System.out.println("File " + get_filename
             + " downloaded (" + current + " bytes read)");
     } 
-  
-    private static void printSocketInfo(SSLSocket s) {
-        System.out.println("   Socket class: " + s.getClass());
-        System.out.println("   Remote address = " + s.getInetAddress().toString());
-        System.out.println("   Remote port = " + s.getPort());
-        System.out.println("   Local socket address = " + s.getLocalSocketAddress().toString());
-        System.out.println("   Local address = " + s.getLocalAddress().toString());
-        System.out.println("   Local port = " + s.getLocalPort());
-        System.out.println("   Need client authentication = " + s.getNeedClientAuth());
-        SSLSession ss = s.getSession();
-        System.out.println("   Protocol = "+ss.getProtocol());
-   }
 }

@@ -37,6 +37,12 @@ public class CommandDaoPiratteImpl implements CommandDao{
     } 
     
     @Override
+    public void remove(String filename) throws CommandFailedException {
+        String[] command = {"shred", "-f", "-u", filename};
+        execute(command, "shred");
+    }
+    
+    @Override
     public void execute(String[] command, String strcom) throws CommandFailedException{
         StringBuilder output = new StringBuilder();
         ProcessBuilder pb = new ProcessBuilder(command);
@@ -59,6 +65,5 @@ public class CommandDaoPiratteImpl implements CommandDao{
 
             if (status_code!=0) throw new CommandFailedException();
         } catch (IOException | InterruptedException e) {}
-        
     }
 }

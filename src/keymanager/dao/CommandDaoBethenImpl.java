@@ -60,5 +60,12 @@ public class CommandDaoBethenImpl implements CommandDao {
     public void decrypt(String pub_key, String private_key, String lambda_k, String file) throws CommandFailedException {
         String[] command = {DECRYPT, pub_key, private_key, file};
         execute(command, DECRYPT); 
-    }     
+    }   
+    
+    @Override
+    public void remove(String filename) throws CommandFailedException {
+        String[] command = {"shred", "-f", "-u", filename};
+        execute(command, "shred");
+    }
+    
 }

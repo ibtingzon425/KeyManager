@@ -18,32 +18,122 @@ import keymanager.dao.CommandFailedException;
  */
 public class AWSAPI {
     
-    private String ACCESSKEYID;
-    private String SECRETKEY;
+    private final String ACCESSKEYID;
+    private final String SECRETKEY;
+    private final String USERID;
+    private final int MODE;
     
     private AmazonS3 s3client;
     private CommandDaoBethenImpl cmd; 
     private CommandDaoPiratteImpl com;
+    
+    public SSLProxyClient proxyClient;
         
-    public AWSAPI (String id, String key){
-        this.ACCESSKEYID = id;
-        this.SECRETKEY = key;
+    public AWSAPI (String userId, String accessId, String secretkey, int mode){ 
+        this.ACCESSKEYID = accessId;
+        this.SECRETKEY = secretkey;
+        this.USERID = userId;
+        this.MODE = mode;
+        
         AWSCredentials credentials = new BasicAWSCredentials(ACCESSKEYID, SECRETKEY);  
         ClientConfiguration clientConfig = new ClientConfiguration();
         clientConfig.setProtocol(Protocol.HTTPS);
         clientConfig.setProxyHost("proxy8.upd.edu.ph");
-        clientConfig.setProxyPort(8080);      
+        clientConfig.setProxyPort(8080); 
+        
         s3client = new AmazonS3Client(credentials); 
         cmd = new CommandDaoBethenImpl();
-        com = new CommandDaoPiratteImpl();
+        com = new CommandDaoPiratteImpl();;
     }
     
+    public void setProxy(String PROXYHOST, int PROXYPORT, String PUBKEY, String PWD){
+        proxyClient = new SSLProxyClient(PROXYHOST, PROXYPORT, PUBKEY, PWD);
+    }
+    
+    public void upload(String filename, String policy, String bucketname) throws IOException, CommandFailedException{                
+        String pubkey_loc = System.getProperty("user.dir") + "/pub_key";
+        
+        if (this.MODE == 0){
+            com.encrypt(pubkey_loc, filename, policy);
+            File uploadFileABE = new File(filename + ".cpabe");
+            File uploadFileAES = new File(filename + ".cpaes");
+
+            if(uploadFileABE.exists() && uploadFileAES.exists()) {
+                System.out.println("Uploading " + filename + "...");
+                s3client.putObject(bucketname, uploadFileABE.getName(), uploadFileABE);
+                s3client.putObject(bucketname, uploadFileAES.getName(), uploadFileAES);
+                System.out.println(uploadFileABE.getName() + " upload success.");
+            }
+        }
+        else{
+            cmd.encrypt(pubkey_loc, filename, policy);
+            File uploadFileABE = new File(filename + ".cpabe");
+            if(uploadFileABE.exists()){
+                System.out.println("Uploading " + filename + "...");
+                s3client.putObject(bucketname, uploadFileABE.getName(), uploadFileABE);
+                System.out.println(uploadFileABE.getName() + " upload success.");
+            }                
+        }       
+    }
+           
+    public void download(String filename, String bucketname, String dest) throws CommandFailedException, IOException, FileNotFoundException, SSLClientErrorException, NoSuchAlgorithmException{
+        String pubkey_loc = System.getProperty("user.dir") + "/pub_key";
+        String secretkey_loc = System.getProperty("user.dir") + "/" + this.USERID;
+        String destfile = dest + "/" +filename;
+                
+        if (MODE == 0){
+            String lambda_k_loc = System.getProperty("user.dir") + "/" + this.USERID + "lambda_k";
+            String destfileproxy = dest + "/" + filename + ".proxy";
+                        
+            String filenameABE = filename;
+            this.fetch(bucketname, filenameABE, dest);
+            String filenameAES = filenameABE;
+            filenameAES = filenameAES.replaceAll(".cpabe", ".cpaes");
+            this.fetch(bucketname, filenameAES, dest);
+
+            proxyClient.proxyReEncrypt(USERID, destfile);
+            
+            com.decrypt(pubkey_loc, secretkey_loc, lambda_k_loc, destfileproxy);
+            com.remove(destfile);
+        }
+        else{
+            String filenameABE = filename;
+            this.fetch(bucketname, filenameABE, dest);
+            cmd.decrypt(pubkey_loc, secretkey_loc, "", destfile);
+        }
+    }
+    
+    private void fetch(String bucketname, String filename, String dest) throws FileNotFoundException, IOException, CommandFailedException, SSLClientErrorException, NoSuchAlgorithmException{
+        System.out.println("Downloading " + filename + "...");
+        
+        S3Object s3object = s3client.getObject(new GetObjectRequest(bucketname, filename));
+        System.out.println("Content-Type: "  + 	s3object.getObjectMetadata().getContentType());
+        InputStream reader = new BufferedInputStream(s3object.getObjectContent());
+        File filedest = new File(dest + "/" + filename);      
+        OutputStream writer = new BufferedOutputStream(new FileOutputStream(filedest));
+
+        int read = -1;
+        while ( ( read = reader.read() ) != -1 ) {
+            writer.write(read);
+        }
+
+        writer.flush();
+        writer.close();
+        reader.close();
+    }   
+    
     public List<String> getBucketList(){
+        try{
         List<String> bucketList = new ArrayList<String>();
         for (Bucket bucket : s3client.listBuckets()) {
             bucketList.add(bucket.getName());
         }
         return bucketList;
+        }
+        catch(Exception ex){
+            ex.printStackTrace();
+        }
+        return null;
     }
     
     public List<String> listFiles(String bucketname){
@@ -62,47 +152,4 @@ public class AWSAPI {
         } while (objectListing.isTruncated());
         return fileList;
     }
-    
-    public void download(String bucketname, String filename, String dest) throws FileNotFoundException, IOException, CommandFailedException, SSLClientErrorException, NoSuchAlgorithmException{
-        System.out.println("Downloading " + filename + "...");
-        
-        S3Object s3object = s3client.getObject(new GetObjectRequest(bucketname, filename));
-        System.out.println("Content-Type: "  + 	s3object.getObjectMetadata().getContentType());
-        InputStream reader = new BufferedInputStream(s3object.getObjectContent());
-        File filedest = new File(dest + "/" + filename);      
-        OutputStream writer = new BufferedOutputStream(new FileOutputStream(filedest));
-
-        int read = -1;
-        while ( ( read = reader.read() ) != -1 ) {
-            writer.write(read);
-        }
-
-        writer.flush();
-        writer.close();
-        reader.close();
-    }
-        
-    public void upload(String filename, String policy, String bucketname) throws IOException, CommandFailedException{                
-        this.encrypt(filename, policy);
-        File uploadFileABE = new File(filename + ".cpabe");
-        File uploadFileAES = new File(filename + ".cpaes");
-        if(uploadFileABE.exists() && uploadFileAES.exists()) {
-            System.out.println("Uploading " + filename + "...");
-            s3client.putObject(bucketname, uploadFileABE.getName(), uploadFileABE);
-            s3client.putObject(bucketname, uploadFileAES.getName(), uploadFileAES);
-        }
-        System.out.println(uploadFileABE.getName() + " upload success.");
-    }
-    
-    public void encrypt(String filename, String policy) throws CommandFailedException{
-        //cmd.encrypt(System.getProperty("user.dir") + "/pub_key", filename, policy);
-        com.encrypt(System.getProperty("user.dir") + "/pk", filename, policy);
-    }
-    
-    public void decrypt(String filename, String dest) throws CommandFailedException{
-        //cmd.decrypt(System.getProperty("user.dir") + "/pub_key", "issas_key", "", file.getAbsolutePath());
-        com.decrypt(System.getProperty("user.dir") + "/pk", System.getProperty("user.dir") + "/aa", System.getProperty("user.dir") + "/aalambda_k", dest + "/" + filename + ".proxy");
-    }
-    
-    
 }

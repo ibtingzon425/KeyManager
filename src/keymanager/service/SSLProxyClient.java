@@ -2,10 +2,6 @@ package keymanager.service;
 
 import java.io.*;
 import java.security.NoSuchAlgorithmException;
-import java.security.cert.CertificateException;
-import java.security.cert.X509Certificate;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.net.ssl.*;
 
 /**
@@ -16,27 +12,25 @@ public class SSLProxyClient{
     
     private final String HOST;
     private final String PUBKEY;
-    private final String USERNAME;
     private final String PWD;
     private final int PORT;
-    private final String cpabeFilename;
+    private String FILENAME;
+    private String USERID;
         
-    public SSLProxyClient(String username, String host, int port, String pubkey, String password, String filename){
-        USERNAME = username;
-        HOST = host;
-        PORT = port;
+    public SSLProxyClient(String host, int port, String pubkey, String password){
         String dir = System.getProperty("user.dir");
-        PUBKEY = dir + "/SSLkeys/public.jks";
-        PWD = "password";
-        cpabeFilename = filename;
-        //PUBKEY = pubkey;
-        //PWD = password;
+        pubkey = dir + "/SSLkeys/public.jks";
+        password = "password";
+        
+        this.HOST = host;
+        this.PORT = port;
+        this.PUBKEY = pubkey;
+        this.PWD = password;
     }
     
-    
     //TODO find a way to send multiple files without having to close/open multiple client sockets.         
-    public void proxyReEncrypt() throws SSLClientErrorException, NoSuchAlgorithmException {
-         try {
+    public void proxyReEncrypt(String userId, String filename) throws SSLClientErrorException, NoSuchAlgorithmException {       
+        try {
             //Initialize SSL Properties
             System.setProperty("javax.net.ssl.trustStore", PUBKEY);
             System.setProperty("javax.net.ssl.keyStorePassword", PWD);
@@ -47,7 +41,7 @@ public class SSLProxyClient{
             DataOutputStream streamOut = new DataOutputStream(socket.getOutputStream());
             DataInputStream  streamIn = new DataInputStream(new BufferedInputStream(socket.getInputStream())); 
             
-            File newFile = new File(cpabeFilename);
+            File newFile = new File(filename);
             
             //Client sends message
             String message = "re-encrypt";
@@ -55,13 +49,13 @@ public class SSLProxyClient{
             streamOut.flush();
             
             //Client sends username
-            String username = USERNAME;
+            String username = userId;
             streamOut.writeUTF(username);
             streamOut.flush();
             
             //Client sends message "<filename>"
-            String filename = newFile.getName();
-            streamOut.writeUTF(filename);
+            String newfilename = newFile.getName();
+            streamOut.writeUTF(newfilename);
             streamOut.flush();
             
             //Client sends message "<filesize>"            
@@ -71,15 +65,15 @@ public class SSLProxyClient{
             
             //Client sends file to encrypt
             this.sendFile(socket, newFile);
-                        
+            
             //Client receives file size of proxy file
             String line = streamIn.readUTF();
             int proxy_filesize = Integer.parseInt(line);
-            System.out.println(proxy_filesize);
+            System.out.println("(PROXY) Downloading " + proxy_filesize + " bytes of data...");
             
             //Client receives file name of proxy file
             String proxy_filename = streamIn.readUTF();
-            System.out.println(proxy_filename);
+            System.out.println("(PROXY) Downloading " + proxy_filename + "...");
             
             //Client receives file and closes socket
             this.getFile(socket, newFile.getAbsolutePath() + ".proxy", proxy_filesize);
@@ -107,11 +101,11 @@ public class SSLProxyClient{
             //Client receives lambda-k file size
             line = streamIn.readUTF();
             int lambda_filesize = Integer.parseInt(line);
-            System.out.println(lambda_filesize);
+            System.out.println("(PROXY) Downloading " + lambda_filesize + "bytes of data...");
             
             //Client receives lambda-k file name
             String lambda_filename = streamIn.readUTF();
-            System.out.println(lambda_filename);
+            System.out.println("(PROXY) Downloading " + lambda_filename + "...");
             
             this.getFile(socket, lambda_filename, lambda_filesize);
             socket.close();
