@@ -63,6 +63,8 @@ public class AWSAPI {
                 s3client.putObject(bucketname, uploadFileABE.getName(), uploadFileABE);
                 s3client.putObject(bucketname, uploadFileAES.getName(), uploadFileAES);
                 System.out.println(uploadFileABE.getName() + " upload success.");
+                com.remove(uploadFileABE.getAbsolutePath());
+                com.remove(uploadFileAES.getAbsolutePath());
             }
         }
         else{
@@ -72,8 +74,16 @@ public class AWSAPI {
                 System.out.println("Uploading " + filename + "...");
                 s3client.putObject(bucketname, uploadFileABE.getName(), uploadFileABE);
                 System.out.println(uploadFileABE.getName() + " upload success.");
+                cmd.remove(uploadFileABE.getAbsolutePath());
             }                
         }       
+    }
+    
+    public void revoke(String filename, String[] revoked_users) throws SSLClientErrorException, NoSuchAlgorithmException, IOException{
+        if (MODE == 0){
+            proxyClient.proxyRevoke(filename, revoked_users);
+            System.out.println("Revoked users");
+        }
     }
            
     public void download(String filename, String bucketname, String dest) throws CommandFailedException, IOException, FileNotFoundException, SSLClientErrorException, NoSuchAlgorithmException{
@@ -90,10 +100,9 @@ public class AWSAPI {
             String filenameAES = filenameABE;
             filenameAES = filenameAES.replaceAll(".cpabe", ".cpaes");
             this.fetch(bucketname, filenameAES, dest);
-
-            proxyClient.proxyReEncrypt(USERID, destfile);
             
-            com.decrypt(pubkey_loc, secretkey_loc, lambda_k_loc, destfileproxy);
+            System.out.println("Preparing to decrypt...");
+            this.decrypt(destfile, lambda_k_loc, pubkey_loc, secretkey_loc, destfileproxy);
             com.remove(destfile);
         }
         else{
@@ -101,6 +110,11 @@ public class AWSAPI {
             this.fetch(bucketname, filenameABE, dest);
             cmd.decrypt(pubkey_loc, secretkey_loc, "", destfile);
         }
+    }
+    
+    private void decrypt(String destfile, String lambda_k_loc, String pubkey_loc, String secretkey_loc, String  destfileproxy) throws SSLClientErrorException, NoSuchAlgorithmException, CommandFailedException{
+        proxyClient.proxyReEncrypt(USERID, destfile);
+        com.decrypt(pubkey_loc, secretkey_loc, lambda_k_loc, destfileproxy);
     }
     
     private void fetch(String bucketname, String filename, String dest) throws FileNotFoundException, IOException, CommandFailedException, SSLClientErrorException, NoSuchAlgorithmException{

@@ -28,6 +28,37 @@ public class SSLProxyClient{
         this.PWD = password;
     }
     
+    public void proxyRevoke(String filename, String[] revoked_users) throws SSLClientErrorException, NoSuchAlgorithmException, IOException {       
+            //Initialize SSL Properties
+            System.setProperty("javax.net.ssl.trustStore", PUBKEY);
+            System.setProperty("javax.net.ssl.keyStorePassword", PWD);
+                        
+            SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();                        
+            SSLSocket socket = (SSLSocket) factory.createSocket(HOST, PORT);
+            socket.startHandshake();
+            DataOutputStream streamOut = new DataOutputStream(socket.getOutputStream());
+            DataInputStream  streamIn = new DataInputStream(new BufferedInputStream(socket.getInputStream()));    
+            
+            String message = "revoke";
+            streamOut.writeUTF(message);
+            streamOut.flush();
+            
+            streamOut.writeUTF(filename);
+            streamOut.flush();
+            
+            
+            String no_revoked_users = Integer.toString(revoked_users.length);
+            streamOut.writeUTF(no_revoked_users);
+            streamOut.flush();
+            
+            for (int i= 0; i < revoked_users.length; i++){
+                String user = revoked_users[i]+".id";
+                streamOut.writeUTF(user);
+                streamOut.flush();
+            }
+            socket.close();
+    }
+    
     //TODO find a way to send multiple files without having to close/open multiple client sockets.         
     public void proxyReEncrypt(String userId, String filename) throws SSLClientErrorException, NoSuchAlgorithmException {       
         try {

@@ -1,6 +1,7 @@
 package keymanager.view;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
@@ -32,18 +33,23 @@ public class KeyManager extends javax.swing.JFrame {
         
         this.clearList(bucketList);
         this.clearList(bucketList2);
+        this.clearList(bucketList3);
         this.clearList(fileList);
+        this.clearList(fileList1);
         ListenerClass listener = new ListenerClass();
         bucketList2.addListSelectionListener(listener);
+        
+        ListenerClass2 listener2 = new ListenerClass2();
+        bucketList3.addListSelectionListener(listener2);
         this.setResizable(false);
     }
     
-    private void initializeFileList(){
-        fileList.setModel(new DefaultListModel());
-        fileListModel = (DefaultListModel) fileList.getModel();
+    private void initializeFileList(JList bList, JList fList){
+        fList.setModel(new DefaultListModel());
+        fileListModel = (DefaultListModel) fList.getModel();
         fileListModel.removeAllElements();
-        if (bucketList2.getSelectedValue() != null){
-        List<String> fileName = awsapi.listFiles(bucketList2.getSelectedValue().toString());
+        if (bList.getSelectedValue() != null){
+        List<String> fileName = awsapi.listFiles(bList.getSelectedValue().toString());
             for (int i = 0; i< fileName.size(); i++){
                 String filename = fileName.get(i);
                 if (filename.contains(".cpabe")){
@@ -73,7 +79,14 @@ public class KeyManager extends javax.swing.JFrame {
     private class ListenerClass implements ListSelectionListener {
         @Override
         public void valueChanged(ListSelectionEvent lse) {
-           initializeFileList();
+           initializeFileList(bucketList2, fileList);
+        }
+    }
+    
+    private class ListenerClass2 implements ListSelectionListener {
+        @Override
+        public void valueChanged(ListSelectionEvent lse) {
+           initializeFileList(bucketList3, fileList1);
         }
     }
 
@@ -108,6 +121,19 @@ public class KeyManager extends javax.swing.JFrame {
         jPanel11 = new javax.swing.JPanel();
         fileDestinationTextField = new javax.swing.JTextField();
         browseDirectoriesButton = new javax.swing.JButton();
+        filename = new javax.swing.JPanel();
+        jPanel12 = new javax.swing.JPanel();
+        jScrollPane4 = new javax.swing.JScrollPane();
+        bucketList3 = new javax.swing.JList();
+        DecRefreshButton1 = new javax.swing.JButton();
+        jPanel13 = new javax.swing.JPanel();
+        jScrollPane5 = new javax.swing.JScrollPane();
+        fileList1 = new javax.swing.JList();
+        DecRefreshButton3 = new javax.swing.JButton();
+        jLabel2 = new javax.swing.JLabel();
+        revokedUsersTextField = new javax.swing.JTextField();
+        jLabel3 = new javax.swing.JLabel();
+        revokeButton = new javax.swing.JButton();
         jPanel1 = new javax.swing.JPanel();
         jPanel4 = new javax.swing.JPanel();
         connectButton = new javax.swing.JButton();
@@ -157,7 +183,7 @@ public class KeyManager extends javax.swing.JFrame {
         jPanel6Layout.setVerticalGroup(
             jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel6Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(15, 15, 15)
                 .addGroup(jPanel6Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(fileTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(browseButton))
@@ -256,7 +282,7 @@ public class KeyManager extends javax.swing.JFrame {
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addGap(28, 28, 28)
-                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel6, javax.swing.GroupLayout.PREFERRED_SIZE, 80, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
                 .addComponent(jPanel7, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
@@ -305,7 +331,7 @@ public class KeyManager extends javax.swing.JFrame {
         jPanel9Layout.setVerticalGroup(
             jPanel9Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel9Layout.createSequentialGroup()
-                .addContainerGap()
+                .addGap(27, 27, 27)
                 .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(DecRefreshButton)
@@ -342,11 +368,11 @@ public class KeyManager extends javax.swing.JFrame {
         jPanel10Layout.setVerticalGroup(
             jPanel10Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel10Layout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 181, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(12, 12, 12)
                 .addComponent(DecRefreshButton2)
-                .addGap(18, 18, 18))
+                .addContainerGap())
         );
 
         jPanel11.setBorder(javax.swing.BorderFactory.createTitledBorder("Choose File Destination"));
@@ -410,13 +436,139 @@ public class KeyManager extends javax.swing.JFrame {
                     .addComponent(jPanel9, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(jPanel10, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addGap(37, 37, 37)
-                .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jPanel11, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(27, 27, 27)
                 .addComponent(DownloadDecrypt, javax.swing.GroupLayout.PREFERRED_SIZE, 30, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
         );
 
         jTabbedPane1.addTab("Decryption", jPanel3);
+
+        jPanel12.setBorder(javax.swing.BorderFactory.createTitledBorder("Choose Bucket"));
+
+        bucketList3.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane4.setViewportView(bucketList3);
+
+        DecRefreshButton1.setText("Refresh");
+        DecRefreshButton1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DecRefreshButton1ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel12Layout = new javax.swing.GroupLayout(jPanel12);
+        jPanel12.setLayout(jPanel12Layout);
+        jPanel12Layout.setHorizontalGroup(
+            jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel12Layout.createSequentialGroup()
+                .addContainerGap(20, Short.MAX_VALUE)
+                .addGroup(jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(DecRefreshButton1)
+                    .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 184, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(26, 26, 26))
+        );
+        jPanel12Layout.setVerticalGroup(
+            jPanel12Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel12Layout.createSequentialGroup()
+                .addGap(27, 27, 27)
+                .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 174, Short.MAX_VALUE)
+                .addGap(18, 18, 18)
+                .addComponent(DecRefreshButton1)
+                .addContainerGap())
+        );
+
+        jPanel13.setBorder(javax.swing.BorderFactory.createTitledBorder("Choose File"));
+
+        fileList1.setModel(new javax.swing.AbstractListModel() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public Object getElementAt(int i) { return strings[i]; }
+        });
+        jScrollPane5.setViewportView(fileList1);
+
+        DecRefreshButton3.setText("Refresh");
+        DecRefreshButton3.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                DecRefreshButton3ActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout jPanel13Layout = new javax.swing.GroupLayout(jPanel13);
+        jPanel13.setLayout(jPanel13Layout);
+        jPanel13Layout.setHorizontalGroup(
+            jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel13Layout.createSequentialGroup()
+                .addGap(29, 29, 29)
+                .addGroup(jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(DecRefreshButton3)
+                    .addComponent(jScrollPane5, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(23, Short.MAX_VALUE))
+        );
+        jPanel13Layout.setVerticalGroup(
+            jPanel13Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(jPanel13Layout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(DecRefreshButton3)
+                .addGap(18, 18, 18))
+        );
+
+        jLabel2.setText("Enter UIDs of revoked users: ");
+
+        jLabel3.setText("Add a space after each UID. (e.g. 1212 2055 9933)");
+
+        revokeButton.setText("Revoke");
+        revokeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                revokeButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout filenameLayout = new javax.swing.GroupLayout(filename);
+        filename.setLayout(filenameLayout);
+        filenameLayout.setHorizontalGroup(
+            filenameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(filenameLayout.createSequentialGroup()
+                .addGap(32, 32, 32)
+                .addGroup(filenameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addGroup(filenameLayout.createSequentialGroup()
+                        .addComponent(jPanel12, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addGap(29, 29, 29)
+                        .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                    .addComponent(revokeButton, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGroup(filenameLayout.createSequentialGroup()
+                        .addGap(12, 12, 12)
+                        .addGroup(filenameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(jLabel3)
+                            .addGroup(filenameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                .addComponent(jLabel2)
+                                .addComponent(revokedUsersTextField)))))
+                .addContainerGap(51, Short.MAX_VALUE))
+        );
+        filenameLayout.setVerticalGroup(
+            filenameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(filenameLayout.createSequentialGroup()
+                .addGap(40, 40, 40)
+                .addGroup(filenameLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jPanel12, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(jPanel13, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addGap(28, 28, 28)
+                .addComponent(jLabel2)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addComponent(revokedUsersTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(18, 18, 18)
+                .addComponent(jLabel3)
+                .addGap(18, 18, 18)
+                .addComponent(revokeButton)
+                .addContainerGap(39, Short.MAX_VALUE))
+        );
+
+        jTabbedPane1.addTab("Revocation", filename);
 
         jPanel4.setBorder(javax.swing.BorderFactory.createTitledBorder("AWS Network Configuration"));
 
@@ -427,13 +579,17 @@ public class KeyManager extends javax.swing.JFrame {
             }
         });
 
+        accessIdTextField.setText("AKIAJQPSL7C3J6PVNR6A");
+
         jLabel8.setText("Access Id");
 
         jLabel9.setText("Access Secret");
 
+        accessSecretTextField.setText("kLNlVOW+hVUJ5id8u/VYRmPaFHf5VnrxTytTX+01");
+
         jLabel12.setText("UserId");
 
-        userIdTextField.setText("12345");
+        userIdTextField.setText("54321");
 
         javax.swing.GroupLayout jPanel4Layout = new javax.swing.GroupLayout(jPanel4);
         jPanel4.setLayout(jPanel4Layout);
@@ -442,7 +598,7 @@ public class KeyManager extends javax.swing.JFrame {
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel4Layout.createSequentialGroup()
                 .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel4Layout.createSequentialGroup()
-                        .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addContainerGap(405, Short.MAX_VALUE)
                         .addComponent(connectButton, javax.swing.GroupLayout.PREFERRED_SIZE, 94, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addGroup(jPanel4Layout.createSequentialGroup()
                         .addGap(26, 26, 26)
@@ -450,11 +606,11 @@ public class KeyManager extends javax.swing.JFrame {
                             .addComponent(jLabel12, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel8, javax.swing.GroupLayout.PREFERRED_SIZE, 85, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jLabel9))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 34, Short.MAX_VALUE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(jPanel4Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                             .addComponent(accessSecretTextField)
                             .addComponent(accessIdTextField)
-                            .addComponent(userIdTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE))))
+                            .addComponent(userIdTextField))))
                 .addContainerGap())
         );
         jPanel4Layout.setVerticalGroup(
@@ -521,11 +677,11 @@ public class KeyManager extends javax.swing.JFrame {
         jPanel1Layout.setHorizontalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addContainerGap(50, Short.MAX_VALUE)
+                .addContainerGap(35, Short.MAX_VALUE)
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(jPanel5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap(52, Short.MAX_VALUE))
+                .addContainerGap(37, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -534,7 +690,7 @@ public class KeyManager extends javax.swing.JFrame {
                 .addComponent(jPanel4, javax.swing.GroupLayout.PREFERRED_SIZE, 175, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(37, 37, 37)
                 .addComponent(jPanel5, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(95, Short.MAX_VALUE))
+                .addContainerGap(137, Short.MAX_VALUE))
         );
 
         jTabbedPane1.addTab("Network Configuration", jPanel1);
@@ -547,7 +703,9 @@ public class KeyManager extends javax.swing.JFrame {
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 532, Short.MAX_VALUE)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                .addGap(0, 0, Short.MAX_VALUE)
+                .addComponent(jTabbedPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 574, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         pack();
@@ -583,10 +741,11 @@ public class KeyManager extends javax.swing.JFrame {
             String host = hostTextField.getText();
             int port = Integer.parseInt(portTextField.getText().trim());
             
-            awsapi.setProxy("localhost", 4000, "", "");
-            awsapi.download(filename, bucket, filedest);
+            awsapi.setProxy(host, port, "", "");
+            awsapi.download(filename, bucket, filedest);        
+            //awsapi.download("30MB.mov.cpabe", "50attributes", filedest);
             
-        } catch (SSLClientErrorException | IOException | CommandFailedException | NoSuchAlgorithmException ex) {
+        } catch (IOException | CommandFailedException | NoSuchAlgorithmException | SSLClientErrorException ex) {
             Logger.getLogger(KeyManager.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_DownloadDecryptActionPerformed
@@ -600,7 +759,7 @@ public class KeyManager extends javax.swing.JFrame {
     }//GEN-LAST:event_DecRefreshButtonActionPerformed
 
     private void DecRefreshButton2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DecRefreshButton2ActionPerformed
-        initializeFileList();
+        initializeFileList(bucketList2, fileList);
     }//GEN-LAST:event_DecRefreshButton2ActionPerformed
 
     private void browseDirectoriesButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_browseDirectoriesButtonActionPerformed
@@ -622,12 +781,42 @@ public class KeyManager extends javax.swing.JFrame {
         
         this.initializeBucketList(bucketList);
         this.initializeBucketList(bucketList2);
-        this.initializeFileList();
+        this.initializeBucketList(bucketList3);
+        this.initializeFileList(bucketList2, fileList);
+        this.initializeFileList(bucketList2, fileList1);
     }//GEN-LAST:event_connectButtonActionPerformed
 
     private void fileDestinationTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_fileDestinationTextFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_fileDestinationTextFieldActionPerformed
+
+    private void DecRefreshButton1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DecRefreshButton1ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_DecRefreshButton1ActionPerformed
+
+    private void DecRefreshButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_DecRefreshButton3ActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_DecRefreshButton3ActionPerformed
+
+    private void revokeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_revokeButtonActionPerformed
+        try {
+            String bucket = bucketList3.getSelectedValue().toString();
+            String filename = fileList1.getSelectedValue().toString();
+            String host = hostTextField.getText();
+            int port = Integer.parseInt(portTextField.getText().trim());
+            String revoked_users_str = revokedUsersTextField.getText();
+            
+            awsapi.setProxy(host, port, "", "");
+            String[] revoked_users = revoked_users_str.split("\\s+");
+            System.out.println(revoked_users.length);
+            for(int i = 0; i< revoked_users.length; i++){
+                System.out.println(revoked_users[i]);
+            }
+            awsapi.revoke(filename, revoked_users);
+        } catch (SSLClientErrorException | NoSuchAlgorithmException | IOException ex) {
+            Logger.getLogger(KeyManager.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_revokeButtonActionPerformed
 
     public static void main(String args[]) {
         /* Set the Nimbus look and feel */
@@ -694,7 +883,9 @@ public class KeyManager extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton DecRefreshButton;
+    private javax.swing.JButton DecRefreshButton1;
     private javax.swing.JButton DecRefreshButton2;
+    private javax.swing.JButton DecRefreshButton3;
     private javax.swing.JButton DownloadDecrypt;
     private javax.swing.JButton EncRefreshButton;
     private javax.swing.JButton EncryptUploadButton;
@@ -705,21 +896,28 @@ public class KeyManager extends javax.swing.JFrame {
     private javax.swing.JButton browseDirectoriesButton;
     private javax.swing.JList bucketList;
     private javax.swing.JList bucketList2;
+    private javax.swing.JList bucketList3;
     private javax.swing.JButton connectButton;
     private javax.swing.JTextField fileDestinationTextField;
     private javax.swing.JList fileList;
+    private javax.swing.JList fileList1;
     private javax.swing.JTextField fileTextField;
+    private javax.swing.JPanel filename;
     private javax.swing.JTextField hostTextField;
     private javax.swing.JButton jButton1;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel10;
     private javax.swing.JLabel jLabel11;
     private javax.swing.JLabel jLabel12;
+    private javax.swing.JLabel jLabel2;
+    private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel8;
     private javax.swing.JLabel jLabel9;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel10;
     private javax.swing.JPanel jPanel11;
+    private javax.swing.JPanel jPanel12;
+    private javax.swing.JPanel jPanel13;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JPanel jPanel3;
     private javax.swing.JPanel jPanel4;
@@ -731,8 +929,12 @@ public class KeyManager extends javax.swing.JFrame {
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
+    private javax.swing.JScrollPane jScrollPane4;
+    private javax.swing.JScrollPane jScrollPane5;
     private javax.swing.JTabbedPane jTabbedPane1;
     private javax.swing.JTextField portTextField;
+    private javax.swing.JButton revokeButton;
+    private javax.swing.JTextField revokedUsersTextField;
     private javax.swing.JTextField userIdTextField;
     // End of variables declaration//GEN-END:variables
 }

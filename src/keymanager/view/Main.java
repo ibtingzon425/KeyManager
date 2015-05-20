@@ -1,18 +1,37 @@
 package keymanager.view;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
+import keymanager.dao.CommandDaoBethenImpl;
+import keymanager.dao.CommandDaoPiratteImpl;
+import keymanager.dao.CommandFailedException;
+import keymanager.service.SSLClientErrorException;
+import keymanager.service.SSLProxyClient;
+
 /**
  * @author Isabelle Tingzon
  * @author Angelu Kaye Tiu
  */
 
 public class Main {
+    
+    private CommandDaoBethenImpl cmd; 
+    private CommandDaoPiratteImpl com;
+    
+    public SSLProxyClient proxyClient;
+    
     public static void main(String[] arg){        
         KeyManager kmapi = new KeyManager();
         KGCClient kgc = new KGCClient();
         //kgc.setVisible(true);
         kmapi.setVisible(true);
+        
     }
+   
 }
+
+
         /*Command com = new Command();
          String filename = "a.txt";
          String[] attributes = {"friend", "colleague"};
